@@ -1,0 +1,34 @@
+# The path that we nade i.e. .github/workflows/file_name.yml is must be same when you configure github actions.
+# This directory file location will be in the root folder
+# This actions are automated and can be perform automatically which is free by Github for only 2000 min
+
+# This 3 dashes signifies it's a yml file
+# This the name that is going to appear in GitHUb actions
+---
+name: Checks
+
+on: [push] # This is the trigger, so we are saying this particular github actions to run on push, which means any push of changes to our project
+
+jobs:
+    test-lint: # This is the id of the new job
+        name: Test and Lint # This is the human friendly name that you are going to see in the GitHUb actions interface
+        runs-on: ubuntu-20.04 # runs-on is the runner that we are going to be running our job on. The runner is basically the operating system that we are going to running the job
+        # Next we are going to add the steps, so the steps are the different things that run for the job
+        # NOTE - In this runner docker-compose is pre isntalled, if you are using this runner
+        steps:
+            # Step 1
+            - name: Login to Docker Hub
+              uses: docker/login-action@v1
+            #   uses - allows you to use another pre-made action that's provided in the GitHub actions repository
+              with:
+                username: ${{ secrets.DOCKERHUB_USER }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+            # Step 2 - checkout
+            - name: Checkout
+              uses: actions/checkout@v2
+            - name: Test
+              run: docker compose run --rm app sh -c "python manage.py test"
+            - name: Lint
+              run: docker compose run --rm app sh -c "flake8"
+            
+
