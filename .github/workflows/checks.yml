@@ -10,7 +10,7 @@ jobs:
         name: Test and Lint # This name will show under GitHub actions interface.
         runs-on: ubuntu-24.04 # It is the runner that we are going to running our jobs on. Already docker is pre installed inside thi ubuntu runner.
         steps: # What are the jobs that will run in this tunner for this test-lint id
-            - name: Login to Docker Hub # Name of the first step
+            - name: Login to Docker Hub # Name of the first step...
               uses: docker/login-action@v1 # This is a pre-made action that is provided in the GitHub actions repository. This action is used to login to Docker. @v1 is the specified the version of this pre-made action.
               with:
                 username: ${{ secrets.DOCKERHUB_USER }}
