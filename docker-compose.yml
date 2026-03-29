@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: . #  the contet that we will be using is the root directory
+      args:
+        - DEV=true
+    volumes: 
+      - ./app:/app # We are using volume because whenever we are making some chnages in the local code it will reflect in the running container inreal time.
+      # We don't have to rebuild the container everytime we change a line of code.
+    ports:
+      - "8000:8000" # this maps port 8000 on our local machine to port 8000 inside our Docker container.
+      # This is how we can access the network when we want to connect to our server 
+    command:
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+      # This is the command to run this app service. We can override the command when we run docker compose run

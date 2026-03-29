@@ -1,0 +1,26 @@
+---
+# The name i.e. going to appear in GitHub options.
+name: Checks 
+
+# This is the Trigger which will trigger the other jobs to run
+on: [push]
+
+jobs:
+    test-lint: # This is the new job name / the id of the job. This id need to referenced somewhere else inside the Github actions
+        name: Test and Lint # This name will show under GitHub actions interface.
+        runs-on: ubuntu-20.04 # It is the runner that we are going to running our jobs on. Already docker is pre installed inside thi ubuntu runner.
+        steps: # What are the jobs that will run in this tunner for this test-lint id
+            - name: Login to Docker Hub # Name of the first step
+              uses: docker/login-action@v1 # This is a pre-made action that is provided in the GitHub actions repository. This action is used to login to Docker. @v1 is the specified the version of this pre-made action.
+              with:
+                username: ${{ secrets.DOOCKERHUB_USER }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Checkout
+              uses: actions/checkout@v2 # It checks out (clones) your repository’s code into the runner (the virtual machine where your workflow runs)
+
+            - name: Test
+              run: docker compose run --rm sh -c "python manage.py test"
+
+            - name: Lint
+              run: docker compose run --rm sh -c "flake8"
