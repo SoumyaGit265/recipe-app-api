@@ -20,7 +20,7 @@ jobs:
               uses: actions/checkout@v2 # It checks out (clones) your repository’s code into the runner (the virtual machine where your workflow runs)
 
             - name: Test
-              run: docker compose run --rm app sh -c "python manage.py test"
+              run: docker compose run --rm app sh -c "python manage.py migrate && python manage.py test"
 
             - name: Lint
               run: docker compose run --rm app sh -c "flake8"
