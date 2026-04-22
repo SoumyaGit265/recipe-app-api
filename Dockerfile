@@ -17,11 +17,15 @@ ARG DEV=false
 
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \
     adduser \
         --disabled-password \
         --no-create-home \
@@ -37,6 +41,27 @@ RUN python -m venv /py && \
     # We have a root user by default then why we need custom user?
     # IF we didn't specify the user, then the only user available inside the alpine image that we are using would be the root user.
     # The root user is the user that has the full access and permissions to do everything on the server. So there will be no restrictions and limitations
+
+# apk add --update --no-cache postgresql-client && \
+# apk add --update --no-cache --virtual .tmp-build-deps \
+#     build-base postgresql-dev musl-dev && \
+
+    # apk → Alpine Package Keeper (Alpine’s package manager).
+    # add → The subcommand that tells apk to install new packages.
+    # --update → Refresh the package index before installing (so you get the latest versions).
+    # --no-cache → Don’t keep the downloaded package index around after installation (keeps the image smaller and cleaner).
+    # --virtual .tmp-build-deps → Create a virtual package group named .tmp-build-deps.
+        # 1. This is clever: it groups all the listed packages together under one name.
+        # 2. Later, you can remove them all at once with apk del .tmp-build-deps after you’ve finished compiling.
+        # 3. This keeps your final Docker image lean, because you don’t need compilers and headers at runtime.
+    # build-base → Meta-package that installs essential build tools (gcc, make, libc-dev).
+    # postgresql-dev → PostgreSQL development headers and libraries (libpq), needed to compile psycopg2.
+    # musl-dev → Development headers for Alpine’s C standard library (musl).
+
+# apk del .tmp-build-deps && \
+# Why we are deleting these 3 packages - build-base, postgresql-dev, musl-dev later on?
+# To use psycopg2 we only need postgresql-client no need of all these 3 packages once pycopg2 get installed
+
 
 
 ENV PATH="/py/bin:$PATH"
